@@ -1,1 +1,1 @@
-# Raise_the_terrain
+Folder for the project Raise The Terrain
