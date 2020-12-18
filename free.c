@@ -5,12 +5,11 @@
  *
  * @g3D: graph to free
  * @row : number of rows
- * @col : number of col
  *
  * Return: Void
  */
 
-void freeGraph3D(Point3D **g3D, int row, int col)
+void freeGraph3D(Point3D **g3D, int row)
 {
 	int i;
 
@@ -26,16 +25,34 @@ void freeGraph3D(Point3D **g3D, int row, int col)
  *
  * @g2D: graph to free
  * @row : number of rows
- * @col : number of col
  *
  * Return: Void
  */
 
-void freeGraph2D(Point2D **g2D, int row, int col)
+void freeGraph2D(Point2D **g2D, int row)
 {
 	int i;
 
 	for (i = 0; i < row; i++)
 		free(g2D[i]);
 	free(g2D);
+}
+
+
+/**
+ * freeAlt - frees an alt matrix
+ *
+ * @g: graph to free
+ * @row : number of rows
+ *
+ * Return: Void
+ */
+
+void freeAlt(int **g, int row)
+{
+	int i;
+
+	for (i = 0; i < row; i++)
+		free(g[i]);
+	free(g);
 }

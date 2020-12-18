@@ -14,7 +14,7 @@
 #define MARGIN 30
 
 /**
- * struct Point3D - stroe the coordinates of a 3D point
+ * struct Point3D - stoe the coordinates of a 3D point
  *
  * @X: X coordinate
  * @Y: Y coordinate
@@ -67,14 +67,14 @@ int init_instance(SDL_Instance *);
 
 /* main.c */
 void draw_stuff(SDL_Instance instance);
-int poll_events(int *theta, int *altp, int *zoom);
+int poll_events(int *theta, int *altp, int *zoom, int zi, int *trx, int *try);
 int main(int ac, char **av);
 
 /* grid.c */
-int draw_grid(SDL_Instance instance, Point2D **g2D, int row, int col, int zoom);
-int **getaltfromfile (char *filename, int *row, int *col);
-int countcol (char *lineptr);
-int *mystrtow (char *lineptr);
+int draw_grid(SDL_Instance ins, Point2D **g2D, int row, int col, int z, int tx, int ty);
+int **getaltfromfile(char *filename, int *row, int *col);
+int countcol(char *lineptr);
+int *mystrtow(char *lineptr);
 
 /* graph.c */
 Point3D **getGraph3D(int **alt, int row, int col, int dist);
@@ -83,7 +83,8 @@ int getZoom2D(Point2D **g2D, int row, int col, int margin);
 Point3D **moveGraph3D(Point3D **g3I, int row, int col, int theta, int altp);
 
 /* free.c */
-void freeGraph3D(Point3D **g3D, int row, int col);
-void freeGraph2D(Point2D **g2D, int row, int col);
+void freeGraph3D(Point3D **g3D, int row);
+void freeGraph2D(Point2D **g2D, int row);
+void freeAlt(int **g, int row);
 
 #endif

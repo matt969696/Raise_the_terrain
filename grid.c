@@ -8,10 +8,12 @@
  * @row : number of rows
  * @col : number of columns
  * @zoom : zoom to apply
+ * @trx : horizontal translation
+ * @try : vertical translation
  *
  * Return: 0 on Success, 1 on Error
  */
-int draw_grid(SDL_Instance instance, Point2D **g2D, int row, int col, int zoom)
+int draw_grid(SDL_Instance instance, Point2D **g2D, int row, int col, int zoom, int trx, int try)
 {
 	int i, j, fromx, fromy, tox, toy;
 
@@ -21,18 +23,18 @@ int draw_grid(SDL_Instance instance, Point2D **g2D, int row, int col, int zoom)
 	{
 		for (j = 0; j < col; j++)
 		{
-			fromx = WINX / 2 + ((g2D[i][j].WX - WINX / 2) * zoom) / 100;
-			fromy = WINY / 2 + ((g2D[i][j].WY - WINY / 2) * zoom) / 100;
+			fromx = trx + WINX / 2 + ((g2D[i][j].WX - WINX / 2) * zoom) / 100;
+			fromy = try + WINY / 2 + ((g2D[i][j].WY - WINY / 2) * zoom) / 100;
 			if (i + 1 < row)
 			{
-				tox = WINX / 2 + ((g2D[i + 1][j].WX - WINX / 2) * zoom) / 100;
-				toy = WINY / 2 + ((g2D[i + 1][j].WY - WINY / 2) * zoom) / 100;
+				tox = trx + WINX / 2 + ((g2D[i + 1][j].WX - WINX / 2) * zoom) / 100;
+				toy = try + WINY / 2 + ((g2D[i + 1][j].WY - WINY / 2) * zoom) / 100;
 				SDL_RenderDrawLine(instance.renderer, fromx, fromy, tox, toy);
 			}
 			if (j + 1 < col)
 			{
-				tox = WINX / 2 + ((g2D[i][j + 1].WX - WINX / 2) * zoom) / 100;
-				toy = WINY / 2 + ((g2D[i][j + 1].WY - WINY / 2) * zoom) / 100;
+				tox = trx + WINX / 2 + ((g2D[i][j + 1].WX - WINX / 2) * zoom) / 100;
+				toy = try + WINY / 2 + ((g2D[i][j + 1].WY - WINY / 2) * zoom) / 100;
 				SDL_RenderDrawLine(instance.renderer, fromx, fromy, tox, toy);
 			}
 		}
@@ -64,7 +66,11 @@ int **getaltfromfile(char *filename, int *row, int *col)
 		return (NULL);
 
 	fd = fopen(filename, "r");
-
+	if (fd == NULL)
+	{
+		printf("Can't open file %s\n", filename);
+		exit(1);
+	}
 
 	while ((read = getline(&lineptr, &n, fd)) != EOF)
 	{

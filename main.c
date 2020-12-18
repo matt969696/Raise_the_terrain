@@ -21,11 +21,14 @@ void draw_stuff(SDL_Instance instance)
  * @theta : theta angle
  * @altp : altitude percent
  * @zoom : zoom on the surface
+ * @zi : initial zoom
+ * @trx : horizontal translation
+ * @try : vertical translation
  *
  * Return: 1 if quit
  */
 
-int poll_events(int *theta, int *altp, int *zoom)
+int poll_events(int *theta, int *altp, int *zoom, int zi, int *trx, int *try)
 {
 	SDL_Event event;
 	SDL_KeyboardEvent key;
@@ -50,13 +53,29 @@ int poll_events(int *theta, int *altp, int *zoom)
 			if (key.keysym.sym == SDLK_DOWN)
 				*altp -= 2;
 			if (key.keysym.sym == SDLK_KP_PLUS)
-				*zoom += 2;
-			if (key.keysym.sym == SDLK_KP_MINUS)
+				*zoom += 2 ;
+			if (key.keysym.sym == SDLK_KP_MINUS && *zoom > 3)
 				*zoom -= 2;
-
+			if (key.keysym.sym == SDLK_w)
+				*try -= 5;
+			if (key.keysym.sym == SDLK_s)
+				*try += 5;
+			if (key.keysym.sym == SDLK_a)
+				*trx -= 5;
+			if (key.keysym.sym == SDLK_d)
+				*trx += 5;
+			if (key.keysym.sym == SDLK_c)
+			{
+				*theta = 0;
+				*altp = 100;
+				*zoom = zi;
+				*trx = 0;
+				*try = 0;
+			}
 			break;
 		}
 	}
+	return (0);
 }
 
 
@@ -72,7 +91,7 @@ int poll_events(int *theta, int *altp, int *zoom)
 int main(int ac, char **av)
 {
 	int **alt;
-	int row = 0, col = 0, zoom, theta = 0, altp = 100;
+	int row = 0, col = 0, zoom, zoominit, theta = 0, altp = 100, trx = 0, try = 0;
 	Point3D **g3Init, **g3Final;
 	Point2D **g2Init, **g2Final;
 	SDL_Instance instance;
@@ -86,6 +105,7 @@ int main(int ac, char **av)
 	g3Init = getGraph3D(alt, row, col, LSIZE);
 	g2Init = getGraph2D(g3Init, row, col);
 	zoom = getZoom2D(g2Init, row, col, MARGIN);
+	zoominit = zoom;
 
 	g3Final = moveGraph3D(g3Init, row, col, theta, altp);
 	g2Final = getGraph2D(g3Final, row, col);
@@ -96,16 +116,21 @@ int main(int ac, char **av)
 	{
 		SDL_SetRenderDrawColor(instance.renderer, 0, 0, 0, 0);
 		SDL_RenderClear(instance.renderer);
-		if (poll_events(&theta, &altp, &zoom) == 1)
+		if (poll_events(&theta, &altp, &zoom, zoominit, &trx, &try) == 1)
 			break;
 
-		freeGraph3D(g3Final, row, col);
-		freeGraph2D(g2Final, row, col);
+		freeGraph3D(g3Final, row);
+		freeGraph2D(g2Final, row);
 		g3Final = moveGraph3D(g3Init, row, col, theta, altp);
 		g2Final = getGraph2D(g3Final, row, col);
-		draw_grid(instance, g2Final, row, col, zoom);
+		draw_grid(instance, g2Final, row, col, zoom, trx, try);
 		SDL_RenderPresent(instance.renderer);
 	}
+	freeGraph3D(g3Final, row);
+	freeGraph2D(g2Final, row);
+	freeGraph3D(g3Init, row);
+	freeGraph2D(g2Init, row);
+	freeAlt(alt, row);
 	SDL_DestroyRenderer(instance.renderer);
 	SDL_DestroyWindow(instance.window);
 	SDL_Quit();
